@@ -1,40 +1,11 @@
-from flask import Flask, jsonify, request, render_template
-import jwt
+from flask import Flask
+from .register_user_data import register_bp
+import uuid
 
 app = Flask(__name__)
+uid = uuid.uuid4()
 
-
-@app.route("/")
-def initial_page():
-    return render_template('login_page.html')
-
-
-
-# Rota responsável pela validação das informações fornecidas no cadastro
-@app.route("/validate")
-def validate():
-    if request.method == 'POST':
-        try:
-            data_info = request.json
-        except Exception as e:
-            return jsonify({
-                'Status': False,
-                'Message': e
-            }), 400
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.register_blueprint(register_bp, url_prefix='/register')
 
 if __name__ == "__main__":
     app.run(debug=True)
