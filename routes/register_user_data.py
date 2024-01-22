@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .controller.db_controller import ManageDB
+from ..controller.db_controller import ManageDB
 db = ManageDB
 
 register_bp = Blueprint('register', __name__)

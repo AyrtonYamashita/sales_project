@@ -1,5 +1,5 @@
 from flask import Flask
-from .register_user_data import register_bp
+from .routes.register_user_data import register_bp
 import uuid
 
 app = Flask(__name__)
