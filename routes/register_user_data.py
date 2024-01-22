@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from controller.db_controller import ManageDB
+from model.db_handle import search_address
 db = ManageDB()
 
 register_bp_user = Blueprint('register_user', __name__)
@@ -26,27 +27,31 @@ def insert_user():
 
 @register_bp_address_send.route("/address_send", methods=["POST"])
 def insert_address():
-
     if not request.authorization:
+        print('OPS SEM AUTORIZAÇÃO')
         return jsonify({
             'Status': False,
             'Message': 'Token de autorização ausente'
         }), 401
 
     if not request.json:
+        print('OPS SEM JSON')
         return jsonify({
             'Status': False,
             'Message': 'Aguardando JSON'
-        })
+        }), 401
     try:
-        auth = request.authorization
+        auth = request.headers.get("Authorization")
+        identity = request.headers.get("identity")
         address_info = request.json
-        address_info["uid"] = auth
-        db.add_address_sender(**address_info)
-        return jsonify({
-            'Status': True,
-            'Message': {**address_info}
-        })
+        address = search_address(address_info, auth)
+        if db.check_user(auth, identity):
+            return address
+        # db.add_address_sender(**address_info)
+        # return jsonify({
+        #     'Status': True,
+        #     'Message': {**address_info}
+        # })
     except Exception as e:
         return jsonify({
             'Status': False,

@@ -204,3 +204,27 @@ class ManageDB:
     #             'Status': False,
     #             'Message': e
     #         }
+
+    def check_user(self, uid, identity):
+        try:
+            cur = self.con.cursor()
+            if len(identity) == 11:
+                cur.execute("""SELECT cpf FROM users.data_pf WHERE client_id=%s""", uid)
+                data_result = cur.fetchone()
+                if identity == data_result[0]:
+                    cur.close()
+                    return True
+                else:
+                    return False
+            elif len(identity) == 14:
+                cur.execute("""SELECT cnpj FROM users.data_pj WHERE client_id=%s""", uid)
+                data_result = cur.fetchone()
+                if identity == data_result:
+                    cur.close()
+                    return True
+                else:
+                    return False
+        except Exception as e:
+            return e
+
+
