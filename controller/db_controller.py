@@ -119,57 +119,46 @@ class ManageDB:
             cur.close()
             return print('Usuário pessoa jurídica adicionado!')
 
-    def add_address_sender(self, uid, cep, street, neigh, city, state, complement):
+    def add_address_sender(self, uid, cep, street, neigh, city, state, complement, number):
         try:
             cur = self.con.cursor()
             cur.execute("""INSERT INTO users.data_address_sender
-                        (client_id, cep_recipient, street, neighbourhood, city, state, complement)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-                        (uid, cep, street, neigh, city, state, complement))
+                        (client_id, cep_sender, street, neighbourhood, city, state, complement, number)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                        (uid, cep, street, neigh, city, state, complement, number))
             self.con.commit()
             cur.close()
-            return {
-                'Status': True
-            }
-        except Exception as e:
-            return {
-                'Status': False,
-                'Message': e
-            }
+            print('Adicionei os dados de remetente')
+            return True
+        except psycopg2.errors.NotNullViolation:
+            self.con.cursor().close()
+            return False
 
-    # def add_address_recipient(self, uid, cep, street, neigh, city, state, complement):
-    #     try:
-    #         cur = self.con.cursor()
-    #         cur.execute("""INSERT INTO users.data_address_recipient
-    #                     (client_id, cep_recipient, street, neighbourhood, city, state, complement)
-    #                     VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-    #                     (uid, cep, street, neigh, city, state, complement))
-    #         self.con.commit()
-    #         cur.close()
-    #         return {
-    #             'Status': True
-    #         }
-    #     except Exception as e:
-    #         return {
-    #             'Status': False
-    #         }
-    #
-    # def add_products_data(self, uid, qnt_choco, qnt_pane, person_box, date, value):
-    #     try:
-    #         cur = self.con.cursor()
-    #         cur.execute("""INSERT INTO orders.products
-    #                     (client_id, chocotone, panetone, person_box, date_delivery, total_value)
-    #                     VALUES (%s, %s, %s, %s, %s, %s)""", (uid, int(qnt_choco), int(qnt_pane), bool(person_box), date, float(value)))
-    #         self.con.commit()
-    #         cur.close()
-    #         return {
-    #             'Status': True
-    #         }
-    #     except Exception as e:
-    #         return {
-    #             'Status': False
-    #         }
-    #
+    def add_address_recipient(self, uid, cep, street, neigh, city, state, complement, number):
+        try:
+            cur = self.con.cursor()
+            cur.execute("""INSERT INTO users.data_address_recipient
+                        (client_id, cep_recipient, street, neighbourhood, city, state, complement, number)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                        (uid, cep, street, neigh, city, state, complement, number))
+            self.con.commit()
+            cur.close()
+            return True
+        except psycopg2.errors.NotNullViolation:
+            return False
+
+    def add_products_data(self, uid, qnt_choco, qnt_pane, person_box, date, value):
+        cur = self.con.cursor()
+        cur.execute("""INSERT INTO orders.products
+                    (client_id, chocotone, panetone, person_box, date_delivery, total_value)
+                    VALUES (%s, %s, %s, %s, %s, %s)""",
+                    (uid, int(qnt_choco), int(qnt_pane), bool(person_box), date, float(value)))
+        self.con.commit()
+        cur.close()
+        return {
+            'Status': True
+        }
+
     # def add_fiscal_data(self, uid, type, exp, fiscal_info):
     #     try:
     #         cur = self.con.cursor()
